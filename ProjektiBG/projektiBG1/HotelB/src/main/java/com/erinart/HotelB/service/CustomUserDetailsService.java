@@ -1,5 +1,7 @@
 package com.erinart.HotelB.service;
 
+import com.erinart.HotelB.exception.OurException;
+import com.erinart.HotelB.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

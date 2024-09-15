@@ -2,6 +2,8 @@ package com.erinart.HotelB.service.interfac;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import com.erinart.HotelB.dto.Response;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

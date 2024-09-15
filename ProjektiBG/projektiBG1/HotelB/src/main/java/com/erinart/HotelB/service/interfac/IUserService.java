@@ -1,5 +1,7 @@
 package com.erinart.HotelB.service.interfac;
 
+import com.erinart.HotelB.dto.LoginRequest;
+import com.erinart.HotelB.dto.Response;
 import com.erinart.HotelB.entity.User;
 
 public interface IUserService {
