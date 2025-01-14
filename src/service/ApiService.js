@@ -12,6 +12,38 @@ export default class ApiService {
         };
     }
 
+
+
+/** static async getAllRooms() {
+        const response = await axios.get(`${this.BASE_URL}/api/rooms/getall`, {
+            headers: this.getHeader()
+        });
+        return response.data;
+    } */
+  
+        /**   static async updateRoom(roomId, roomData) {
+        const response = await axios.put(`${this.BASE_URL}/api/rooms/${roomId}`, roomData, {
+            headers: this.getHeader(),
+        });
+        return response.data;
+    } */
+
+        /**    static async deleteRoom(roomId) {
+        const response = await axios.delete(`${this.BASE_URL}/api/rooms/${roomId}`, {
+            headers: this.getHeader()
+        })
+        return response.data
+    } */
+
+        /** static async createRoom(room) {
+        const response = await axios.post(`${this.BASE_URL}/api/rooms/create`, room, {
+            headers: this.getHeader()
+        });
+        return response.data;
+    } */
+
+
+
     /**AUTH */
 
     /* This  register a new user */
@@ -189,6 +221,76 @@ export default class ApiService {
         const role = localStorage.getItem('role')
         return role === 'USER'
     }
-}
-// export default new ApiService();
 
+
+
+
+    static async addReview(review, config) {
+        try {
+            const response = await axios.post(
+                'http://localhost:8080/api/reviews/add',
+                review,
+                config  // Passing config with the Authorization header
+            );
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    
+    static async getReviewsByRoomId(roomId) {
+        try {
+            const response = await axios.get(`${this.BASE_URL}/api/reviews/room/${roomId}`, {
+                headers: this.getHeader()
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching reviews:", error);
+            throw error;
+        }
+    }
+
+    static async addAmenityToRoom(roomId, amenity) {
+        const response = await axios.post(
+            `${this.BASE_URL}/admin/rooms/${roomId}/amenities`,
+            amenity,
+            {
+                headers: this.getHeader(),
+            }
+        );
+        return response.data;
+    }
+  
+    static async deleteAmenityFromRoom(roomId, amenityId) {
+        const response = await axios.delete(
+            `${this.BASE_URL}/admin/rooms/${roomId}/amenities/${amenityId}`,
+            {
+                headers: this.getHeader(),
+            }
+        );
+        return response.data;
+    }
+
+    static async fetchAmenitiesForRoom(roomId) {
+        const response = await axios.get(
+            `${this.BASE_URL}/amenity/rooms/${roomId}/amenities`,
+            {
+                headers: this.getHeader(),
+            }
+        );
+        return response.data;
+    }
+
+ 
+      
+    
+
+
+}
+
+
+
+
+
+// export default new ApiService();
