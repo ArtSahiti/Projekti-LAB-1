@@ -10,11 +10,16 @@ const EditRoomPage = () => {
         roomType: '',
         roomPrice: '',
         roomDescription: '',
+        amenities: [], // Add amenities state
     });
     const [file, setFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [newAmenity, setNewAmenity] = useState({
+        type: '',
+        description: ''
+    });
 
     useEffect(() => {
         const fetchRoomDetails = async () => {
@@ -25,6 +30,7 @@ const EditRoomPage = () => {
                     roomType: response.room.roomType,
                     roomPrice: response.room.roomPrice,
                     roomDescription: response.room.roomDescription,
+                    amenities: response.room.amenities || [], // Set the fetched amenities
                 });
             } catch (error) {
                 setError(error.response?.data?.message || error.message);
@@ -32,6 +38,25 @@ const EditRoomPage = () => {
         };
         fetchRoomDetails();
     }, [roomId]);
+
+
+  useEffect(() => {
+    const fetchAmenities = async () => {
+      try {
+        const amenities = await ApiService.fetchAmenitiesForRoom(roomId);
+        setRoomDetails((prevDetails) => ({
+          ...prevDetails,
+          amenities,
+        }));
+      } catch (error) {
+        console.error('Error fetching amenities:', error);
+      }
+    };
+  
+    fetchAmenities();
+  }, [roomId]);
+  
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -52,6 +77,31 @@ const EditRoomPage = () => {
         }
     };
 
+    const handleAmenityChange = (e) => {
+        const { name, value } = e.target;
+        setNewAmenity(prevState => ({
+            ...prevState,
+            [name]: value,
+        }));
+    };
+
+    const handleAddAmenity = async () => {
+        try {
+            const response = await ApiService.addAmenityToRoom(roomId, newAmenity);
+            if (response.statusCode === 200) {
+                setRoomDetails(prevState => ({
+                    ...prevState,
+                    amenities: [...prevState.amenities, newAmenity], // Update the list of amenities
+                }));
+                setNewAmenity({ type: '', description: '' }); // Reset the form
+                setSuccess('Amenity added successfully.');
+                setTimeout(() => setSuccess(''), 5000);
+            }
+        } catch (error) {
+            setError(error.response?.data?.message || error.message);
+            setTimeout(() => setError(''), 5000);
+        }
+    };
 
     const handleUpdate = async () => {
         try {
@@ -67,13 +117,11 @@ const EditRoomPage = () => {
             const result = await ApiService.updateRoom(roomId, formData);
             if (result.statusCode === 200) {
                 setSuccess('Room updated successfully.');
-                
                 setTimeout(() => {
                     setSuccess('');
                     navigate('/admin/manage-rooms');
                 }, 3000);
             }
-            setTimeout(() => setSuccess(''), 5000);
         } catch (error) {
             setError(error.response?.data?.message || error.message);
             setTimeout(() => setError(''), 5000);
@@ -86,7 +134,6 @@ const EditRoomPage = () => {
                 const result = await ApiService.deleteRoom(roomId);
                 if (result.statusCode === 200) {
                     setSuccess('Room Deleted successfully.');
-                    
                     setTimeout(() => {
                         setSuccess('');
                         navigate('/admin/manage-rooms');
@@ -145,6 +192,42 @@ const EditRoomPage = () => {
                         onChange={handleChange}
                     ></textarea>
                 </div>
+
+                {/* Amenities Section */}
+                <div className="form-group">
+                <h3>Amenities</h3>
+        {roomDetails.amenities && roomDetails.amenities.length > 0 ? (
+  <ul>
+    {roomDetails.amenities.map((amenity) => (
+      <li key={amenity.amenityId}>
+        <strong>{amenity.type}</strong>: {amenity.description}
+      </li>
+    ))}
+  </ul>
+) : (
+  <p>No amenities added yet.</p>
+)}
+<br />
+
+                    <label>Amenity Type</label>
+                    <input
+                        type="text"
+                        name="type"
+                        value={newAmenity.type}
+                        onChange={handleAmenityChange}
+                    />
+
+                    <label>Amenity Description</label>
+                    <input
+                        type="text"
+                        name="description"
+                        value={newAmenity.description}
+                        onChange={handleAmenityChange}
+                    />
+
+                    <button type="button" onClick={handleAddAmenity}>Add Amenity</button>
+                </div>
+
                 <button className="update-button" onClick={handleUpdate}>Update Room</button>
                 <button className="delete-button" onClick={handleDelete}>Delete Room</button>
             </div>
